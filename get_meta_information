@@ -1,0 +1,41 @@
+clc;clear all;
+%% for get meta information
+% get the activation of RSNs
+%load the z-scored time series
+load 18gordon_occ_regG_zts.mat ind_zts
+load parcels_gordon.txt
+% gordon = ['DMN','SMhand','SMmouth','Vis','FPN','Aud','CPN','RTN','CON','VAT','SAL','DAT','None'];
+
+% power = ['DMN','SM','Vis','FPN','Aud','CON','VAN','DAN','SAL','SUB','[MRN,CEREB,UN]']
+
+
+ind_zts = ind_zts;
+[Tmax,N_areas] = size(ind_zts{1,1});
+parcels_id = parcels_gordon;
+[nsubj,ncond] = size(ind_zts);
+for cd = 1:ncond
+    for s = 1:nsubj
+        zts = ind_zts{s,cd}';
+        net_all = zeros(13,595);
+        meta_all = zeros(13,595);
+        for i = 1:13
+               net_zts = zts(parcels_id == i,:);
+               meannet = zscore(mean(net_zts));
+               net_all(i,:) =  meannet;
+               mvalue = mean(meannet);
+               mvalue_all(i,s,cd) = mvalue;
+               sdvalue = std(meannet);
+               sdvalue_all(i,s,cd) = sdvalue;
+               meta = meannet>= (mvalue+0.5* sdvalue)
+               meta_all(i,:) = meta;
+        end
+           gordon_regG_rsn{s,cd} = meta_all';
+           gordon_regG_net{s,cd} = net_all';
+    end
+ 
+end
+
+
+
+
+
